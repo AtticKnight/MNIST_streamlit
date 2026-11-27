@@ -85,11 +85,20 @@ def compare_agents(weekdays, periods, labels, stop, model, report_progress=None)
 
 def score(rows, prediction_key):
     matrix = [[0, 0], [0, 0]]
+    changes = 0
+    change_correct = 0
     for row in rows:
-        matrix[row["observed_up"]][row[prediction_key]] += 1
+        actual = row["observed_up"]
+        predicted = row[prediction_key]
+        matrix[actual][predicted] += 1
+        if actual != row["previous_interval_up"]:
+            changes += 1
+            change_correct += int(actual == predicted)
     correct = matrix[0][0] + matrix[1][1]
     return {
         "correct": correct,
         "accuracy": correct / len(rows),
+        "change_correct": change_correct,
+        "change_accuracy": change_correct / changes if changes else None,
         "confusion_matrix": matrix,
     }

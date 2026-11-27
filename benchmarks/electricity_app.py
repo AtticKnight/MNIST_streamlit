@@ -83,7 +83,14 @@ if saved and saved[0] == (days, mode):
         "ao_online": "AO, updated after each prediction",
     }
     st.dataframe([
-        {"Model": names[key], "Correct": values["correct"], "Accuracy": f"{values['accuracy']:.2%}"}
+        {
+            "Model": names[key],
+            "Correct": values["correct"],
+            "Accuracy": f"{values['accuracy']:.2%}",
+            "Accuracy on label changes": (
+                f"{values['change_accuracy']:.2%}" if values["change_accuracy"] is not None else "—"
+            ),
+        }
         for key, values in result["models"].items()
     ], hide_index=True)
     if "rows" in result:

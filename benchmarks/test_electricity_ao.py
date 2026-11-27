@@ -60,6 +60,10 @@ class ComparisonTests(unittest.TestCase):
                              [("prediction", bits), ("label", bits, labels[i])])
         self.assertEqual(score(rows, "ao_online_up")["confusion_matrix"], [[0, 1], [2, 0]])
         self.assertEqual(score(rows, "ao_frozen_up")["correct"], 1)
+        self.assertAlmostEqual(score(rows, "ao_frozen_up")["change_accuracy"], 1/3)
+        self.assertEqual(score(rows, "ao_online_up")["change_correct"], 0)
+        stable = [{"observed_up": 1, "previous_interval_up": 1, "forecast": 1}]
+        self.assertIsNone(score(stable, "forecast")["change_accuracy"])
         with self.assertRaises(ValueError):
             compare_agents(weekdays, periods, labels, WARMUP, model)
 

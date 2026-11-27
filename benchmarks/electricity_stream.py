@@ -65,6 +65,7 @@ def evaluate(weekdays, periods, labels, stop):
     fixed_label = int(warmup[1] > warmup[0])
     pattern_counts = defaultdict(lambda: [0, 0])
     correct = Counter()
+    change_correct = Counter()
     switches = 0
     for i in range(INTERVALS_PER_DAY, stop):
         previous = labels[i - 1]
@@ -79,9 +80,13 @@ def evaluate(weekdays, periods, labels, stop):
                 "previous_day": previous_day,
                 "online_exact_pattern": pattern_prediction,
             }
+            changed = labels[i] != previous
             for name, prediction in predictions.items():
-                correct[name] += int(prediction == labels[i])
-            switches += int(labels[i] != previous)
+                hit = int(prediction == labels[i])
+                correct[name] += hit
+                if changed:
+                    change_correct[name] += hit
+            switches += int(changed)
         # Reveal the target only after selecting and scoring every prediction.
         pattern_counts[pattern][labels[i]] += 1
     n = stop - WARMUP
@@ -89,7 +94,12 @@ def evaluate(weekdays, periods, labels, stop):
         "test_intervals": n,
         "label_changes": switches,
         "baselines": {
-            name: {"correct": value, "accuracy": round(value / n, 6)}
+            name: {
+                "correct": value,
+                "accuracy": round(value / n, 6),
+                "change_correct": change_correct[name],
+                "change_accuracy": round(change_correct[name] / switches, 6) if switches else None,
+            }
             for name, value in correct.items()
         },
     }

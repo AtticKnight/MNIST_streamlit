@@ -1,6 +1,6 @@
 """Baselines for a streaming NSW electricity benchmark (OpenML 151, version 1).
 
-Run `python electricity_benchmark.py` for a 28-day test after a 7-day warm-up.
+Run `python benchmarks/electricity_stream.py` for a 28-day test after a 7-day warm-up.
 Add `--all` to evaluate the remaining stream, or `--file electricity.arff`
 to reuse a local copy of the public dataset. Only the standard library is needed.
 """

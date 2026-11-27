@@ -1,0 +1,24 @@
+name: Check electricity benchmark and Streamlit flow
+
+on:
+  push:
+    branches: [benchmark/electricity-stream]
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install public benchmark dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/electricity"
+          "$RUNNER_TEMP/electricity/bin/pip" install --quiet "numpy>=1.26,<3" "streamlit>=1.40,<2" "git+https://github.com/aolabsai/ao_arch.git@36ad46b60c62b5ebf74544958803ed1949317d67"
+      - name: Verify the AO adapter contract, label timing and Streamlit controls
+        run: |
+          "$RUNNER_TEMP/electricity/bin/python" -m unittest discover -s benchmarks -p "test_electricity*.py" -v
